@@ -41,6 +41,15 @@ python -m unittest discover -s tests      # 테스트
 
 달걀은 금리 정점(위)에서 시작해 왼쪽의 금리 하락기(A), 바닥, 오른쪽의 금리 상승기(B) 순서로 반시계 방향으로 돕니다.
 
+## 실행 파일 빌드
+
+```bash
+python -m pip install pyinstaller
+python -m PyInstaller --onefile --console --name KostolanyEgg --icon assets/egg.ico --add-data "data/snapshot.json;data" run_kostolany.py
+```
+
+결과물은 `dist/KostolanyEgg.exe`에 생깁니다. 아이콘 원본은 `assets/egg_icon.svg`이고, `assets/egg.ico`는 이 원본을 16~256px 크기로 변환한 파일입니다.
+
 ## 분석 방식
 
 1. **금리 사이클 추적**: 기준금리 이력에서 마지막으로 방향이 바뀐 지점(바닥 또는 정점)과 누적 변동폭을 찾습니다. 마지막 변경 후 4개월 이상 지났으면 동결 국면으로 봅니다.
