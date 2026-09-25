@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.Kostolany" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/egg_background</item>
+        <item name="android:statusBarColor">@color/egg_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

@@ -50,6 +50,30 @@ python -m PyInstaller --onefile --console --name KostolanyEgg --icon assets/egg.
 
 결과물은 `dist/KostolanyEgg.exe`에 생깁니다. 아이콘 원본은 `assets/egg_icon.svg`이고, `assets/egg.ico`는 이 원본을 16~256px 크기로 변환한 파일입니다.
 
+## 안드로이드 앱
+
+`android/` 폴더는 같은 모형을 Kotlin(Jetpack Compose)으로 옮긴 앱입니다. 모형 결과는 파이썬과 같으며, 단위 테스트로 확인합니다.
+
+- **첫 화면**: 저장된 정보와 투자 성향을 보여 주고, 두 가지 버튼을 제공합니다.
+  - **저장된 정보로 바로 보기**
+  - **최신 정보로 업데이트 후 보기**: 이 버튼을 누를 때만 한국은행 ECOS에 접속합니다. 받은 값은 앱 안에 저장됩니다.
+- **결과 화면**: 탭 4개를 옆으로 밀어서 넘깁니다. 각 탭은 위아래로 스크롤됩니다.
+  1. **달걀 위치**: 달걀 그림, 현재 위치, 진행 방향, 업데이트 결과
+  2. **진단**: 주요 지표, 금리 사이클, 적정금리 구성, 국면별 확률
+  3. **자산배분**: 투자 성향 변경, 추천 배분, 다음 국면 신호
+  4. **시나리오**: 변화별로 늘리고 줄일 자산
+- 처음 설치하면 저장소의 `data/snapshot.json` 값을 기본값으로 씁니다.
+
+빌드하려면 Android SDK(platform 35)와 JDK 17 이상이 필요합니다. JDK 22에서 R8 빌드 중 JVM이 멈추면 두 번째 명령처럼 `-XX:TieredStopAtLevel=1`을 붙여 실행하세요.
+
+```bash
+cd android
+./gradlew testDebugUnitTest assembleRelease
+./gradlew "-Dorg.gradle.jvmargs=-Xmx2048m -XX:TieredStopAtLevel=1" assembleRelease
+```
+
+결과물은 `android/app/build/outputs/apk/release/app-release.apk`에 생깁니다. 디버그 키로 서명되어 있어 휴대폰에 직접 설치할 수 있습니다.
+
 ## 분석 방식
 
 1. **금리 사이클 추적**: 기준금리 이력에서 마지막으로 방향이 바뀐 지점(바닥 또는 정점)과 누적 변동폭을 찾습니다. 마지막 변경 후 4개월 이상 지났으면 동결 국면으로 봅니다.

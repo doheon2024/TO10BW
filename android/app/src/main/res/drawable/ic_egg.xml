@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 첫 화면에 쓰는 달걀 그림 (assets/egg_icon.svg에서 배경만 뺀 모양) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="112dp"
+    android:height="140dp"
+    android:viewportWidth="560"
+    android:viewportHeight="700">
+    <group android:translateX="-230" android:translateY="-180">
+        <path android:fillColor="#1D7A64"
+            android:pathData="M512,200 C330,200 262,400 262,560 C262,740 372,860 512,860 Z" />
+        <path android:fillColor="#16233A"
+            android:pathData="M512,200 C694,200 762,400 762,560 C762,740 652,860 512,860 Z" />
+        <path android:strokeColor="#F3E9D4" android:strokeWidth="36"
+            android:strokeLineCap="round" android:strokeLineJoin="round"
+            android:pathData="M392,470 L392,620 M342,570 L392,624 L442,570" />
+        <path android:strokeColor="#F3E9D4" android:strokeWidth="36"
+            android:strokeLineCap="round" android:strokeLineJoin="round"
+            android:pathData="M632,624 L632,474 M582,524 L632,470 L682,524" />
+        <path android:fillColor="#F3E9D4"
+            android:pathData="M740,700 m-67,0 a67,67 0 1,0 134,0 a67,67 0 1,0 -134,0" />
+        <path android:fillColor="#E0703F"
+            android:pathData="M740,700 m-49,0 a49,49 0 1,0 98,0 a49,49 0 1,0 -98,0" />
+    </group>
+</vector>
