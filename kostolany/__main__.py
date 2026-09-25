@@ -1,15 +1,15 @@
-"""사용법: python -m kostolany [--ecos KEY] [--risk conservative|balanced|aggressive] [--snapshot PATH] [--chart [PATH]] [--open]"""
+"""사용법: python -m kostolany [--update] [--ecos KEY] [--risk conservative|balanced|aggressive] [--snapshot PATH] [--chart [PATH]] [--open]"""
 from __future__ import annotations
 
 import argparse
 import json
 import os
 import sys
-import unicodedata
 from pathlib import Path
 
 from .model import ASSETS, PHASES, Analysis, analyze, heading
 from .scenarios import run_scenarios
+from .text import pad
 
 DEFAULT_SNAPSHOT = Path(__file__).resolve().parent.parent / "data" / "snapshot.json"
 FROZEN = getattr(sys, "frozen", False)  # PyInstaller로 만든 실행 파일인지
@@ -21,6 +21,7 @@ def default_snapshot() -> Path:
         beside = Path(sys.executable).parent / "snapshot.json"
         return beside if beside.exists() else Path(sys._MEIPASS) / "data" / "snapshot.json"
     return DEFAULT_SNAPSHOT
+
 
 # 현재 국면에서 다음 국면으로 넘어가는 신호
 NEXT_SIGNALS = {
@@ -41,12 +42,6 @@ EGG = """
               A3 ●────────────────────────● B1
                  A3 바닥권  ·  B1 인상 개시
 """
-
-
-def pad(text: str, width: int) -> str:
-    """한글(전각) 문자를 2칸으로 계산해 왼쪽 정렬한다."""
-    w = sum(2 if unicodedata.east_asian_width(c) in "WF" else 1 for c in text)
-    return text + " " * max(0, width - w)
 
 
 def bar(pct: float, width: int = 30) -> str:
@@ -122,27 +117,60 @@ def _fmt(v, unit):
     return "-" if v is None else f"{v:,}{unit}"
 
 
+def save_path(snapshot: Path) -> Path:
+    """업데이트 결과를 저장할 곳. 실행 파일의 내장 데이터는 읽기 전용이라 실행 파일 옆에 저장한다."""
+    if FROZEN and Path(sys._MEIPASS) in snapshot.resolve().parents:
+        return Path(sys.executable).parent / "snapshot.json"
+    return snapshot
+
+
 def main(argv=None) -> None:
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
         sys.stderr.reconfigure(encoding="utf-8")
-    # 실행 파일을 더블클릭하면: 그림을 브라우저로 열고, 창이 바로 닫히지 않게 한다
-    double_click = FROZEN and argv is None and len(sys.argv) == 1
-    if double_click:
-        import tempfile
-        argv = ["--chart", str(Path(tempfile.gettempdir()) / "kostolany_egg.svg"), "--open"]
-    try:
+    if FROZEN and argv is None and len(sys.argv) == 1:
+        _menu()  # 실행 파일을 더블클릭한 경우
+    else:
         _run(argv)
-    finally:
-        if double_click:
-            input("\n엔터를 누르면 종료합니다...")
+
+
+def _menu() -> None:
+    """더블클릭 실행용 메뉴. 업데이트는 사용자가 고를 때만 한다."""
+    import tempfile
+    chart = str(Path(tempfile.gettempdir()) / "kostolany_egg.svg")
+    while True:
+        as_of = json.loads(default_snapshot().read_text(encoding="utf-8"))["as_of"]
+        print("\n" + "=" * 48)
+        print(" 코스톨라니 달걀 모형 · 한국 경기 분석")
+        print("=" * 48)
+        print(f"  1) 저장된 지표로 분석 (기준일 {as_of})")
+        print("  2) 최신 금리·물가로 업데이트 후 분석")
+        print("  q) 종료")
+        try:
+            choice = input("선택 > ").strip().lstrip("﻿").lower()
+        except EOFError:
+            return
+        if choice in ("q", "3"):
+            return
+        if choice not in ("1", "2"):
+            continue
+        try:
+            _run((["--update"] if choice == "2" else []) + ["--chart", chart, "--open"])
+        except Exception as e:  # 창이 닫히지 않도록 오류를 보여주고 메뉴로 돌아간다
+            print(f"\n오류: {e}")
+        try:
+            input("\n엔터를 누르면 메뉴로 돌아갑니다...")
+        except EOFError:
+            return
 
 
 def _run(argv) -> None:
     ap = argparse.ArgumentParser(description="코스톨라니 달걀 모형으로 한국 경기 국면과 자산배분을 분석합니다.")
     ap.add_argument("--snapshot", type=Path, default=default_snapshot(), help="지표 스냅샷 JSON 경로")
+    ap.add_argument("--update", action="store_true",
+                    help="한국은행 ECOS에서 최신 금리·물가·환율을 받아 스냅샷을 갱신·저장한 뒤 분석")
     ap.add_argument("--ecos", metavar="KEY", default=os.environ.get("ECOS_API_KEY"),
-                    help="한국은행 ECOS API 키 (또는 환경변수 ECOS_API_KEY)")
+                    help="--update에 쓸 ECOS API 키 (없으면 공개 sample 키, 환경변수 ECOS_API_KEY)")
     ap.add_argument("--risk", choices=["conservative", "balanced", "aggressive"], default="balanced")
     ap.add_argument("--json", action="store_true", help="결과를 JSON으로 출력")
     ap.add_argument("--chart", nargs="?", const=Path("egg.svg"), type=Path, metavar="PATH",
@@ -150,11 +178,14 @@ def _run(argv) -> None:
     ap.add_argument("--open", action="store_true", help="저장한 그림을 브라우저로 열기 (--chart 포함)")
     args = ap.parse_args(argv)
 
-    s = json.loads(args.snapshot.read_text(encoding="utf-8"))
-    if args.ecos:
-        from .ecos import update_snapshot
-        for line in update_snapshot(s, args.ecos):
-            print(f"[ECOS] {line}", file=sys.stderr)
+    if args.update:
+        from .update import run_update
+        s = run_update(args.snapshot, save_path(args.snapshot), args.ecos, args.risk,
+                       out=sys.stderr if args.json else sys.stdout)
+        if not args.json:
+            print()
+    else:
+        s = json.loads(args.snapshot.read_text(encoding="utf-8"))
 
     a = analyze(s, args.risk)
     results = run_scenarios(s, args.risk)

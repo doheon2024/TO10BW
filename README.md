@@ -9,16 +9,25 @@
 ```bash
 python -m kostolany                       # data/snapshot.json 값으로 분석
 python -m kostolany --risk conservative   # 안정형 / balanced 중립형 / aggressive 공격형
-python -m kostolany --ecos YOUR_KEY       # 한국은행 ECOS API로 최신 지표 자동 갱신
+python -m kostolany --update              # 최신 금리·물가를 받아 저장한 뒤 분석 (요청할 때만)
 python -m kostolany --json                # 결과를 JSON으로 출력
 python -m kostolany --chart               # 달걀 위치 그림을 egg.svg로 저장
 python -m kostolany --open                # 그림을 저장하고 브라우저로 열기
 python -m unittest discover -s tests      # 테스트
 ```
 
-외부 패키지가 필요 없습니다(Python 3.10+). ECOS API 키는 https://ecos.bok.or.kr/api/ 에서 무료로 발급받을 수 있습니다.
-`ECOS_API_KEY` 환경변수로 넣어도 됩니다. ECOS로 자동 갱신되는 값은 기준금리 이력, CPI, 국고채 3·10년, 원/달러입니다.
-근원물가, 성장률, 집값, 가계부채, 통화정책 기조는 `data/snapshot.json`에서 직접 수정하세요.
+외부 패키지가 필요 없습니다(Python 3.10+).
+
+## 지표 업데이트 (요청할 때만)
+
+평소에는 `data/snapshot.json`에 저장된 값으로 분석하고, 인터넷에 접속하지 않습니다.
+`--update`를 붙이거나 실행 파일 메뉴에서 **2번**을 고를 때만 한국은행 ECOS에서 최신 값을 받아옵니다.
+
+- 새로 받는 값: 기준금리 변경 내역(변경 날짜 포함), 소비자물가·근원물가 전년비, 국고채 3·10년, 원/달러
+- 결과 화면: 항목별 이전 값 → 새 값, 달걀 위치가 바뀌었는지, 자산배분을 얼마나 조정해야 하는지
+- 저장: 새 값은 스냅샷에 저장하고, 이전 파일은 `snapshot.json.bak`으로 남깁니다. 실행 파일은 exe 옆의 `snapshot.json`에 저장합니다.
+- API 키: 없어도 됩니다. 기본으로 ECOS 공개 `sample` 키를 씁니다. 개인 키(https://ecos.bok.or.kr/api/ 무료 발급)가 있으면 `--ecos KEY`나 환경변수 `ECOS_API_KEY`로 넣으세요.
+- 직접 고칠 값: 성장률, 통화정책 기조, 집값·가계부채 추세는 자동으로 바뀌지 않습니다. 금통위 발표 뒤 `snapshot.json`에서 직접 고쳐 주세요.
 
 ## 그림
 
