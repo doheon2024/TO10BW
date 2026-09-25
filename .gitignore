@@ -1,0 +1,5 @@
+egg.svg
+build/
+dist/
+*.spec
+__pycache__/

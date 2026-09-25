@@ -1,0 +1,29 @@
+{
+  "_comment": "수동 입력 스냅샷. ECOS API 키가 있으면 --ecos 옵션으로 금리/물가/환율/국고채 값을 자동 갱신합니다. null 값은 분석에서 제외됩니다.",
+  "as_of": "2026-09-25",
+  "base_rate_history": [
+    {"date": "2024-10-11", "rate": 3.25},
+    {"date": "2024-11-28", "rate": 3.00},
+    {"date": "2025-02-25", "rate": 2.75},
+    {"date": "2025-05-29", "rate": 2.50},
+    {"date": "2026-07-16", "rate": 2.75},
+    {"date": "2026-08-27", "rate": 3.00}
+  ],
+  "cpi_yoy": 3.1,
+  "core_cpi_yoy": 3.4,
+  "inflation_target": 2.0,
+  "gdp_growth": 3.3,
+  "potential_growth": 2.0,
+  "neutral_rate": 2.5,
+  "ktb_3y": null,
+  "ktb_10y": null,
+  "usdkrw": 1370.7,
+  "house_price_trend": "rising",
+  "household_debt_trend": "rising",
+  "policy_guidance": "hawkish",
+  "sources": [
+    "한국은행 통화정책방향 2026-08-27: 기준금리 2.75%→3.00%, 성장률 전망 2026 3.3%, 물가 전망 2.7%, 추가 인상 시기는 데이터에 따라 결정",
+    "통계청 8월 소비자물가 3.1%(근원 3.4%, Investing.com 보도 기준)",
+    "USD/KRW 1,370.7원 (2026-09-23 종가)"
+  ]
+}
