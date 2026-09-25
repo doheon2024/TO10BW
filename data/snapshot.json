@@ -1,0 +1,48 @@
+{
+  "_comment": "지표 스냅샷. --update(또는 실행 파일 메뉴 2번)를 요청할 때만 기준금리·물가·국고채·환율이 한국은행 ECOS에서 갱신됩니다. 성장률·정책기조·집값·가계부채는 직접 수정하세요. null 값은 분석에서 제외됩니다.",
+  "as_of": "2026-09-25",
+  "base_rate_history": [
+    {
+      "date": "2024-10-11",
+      "rate": 3.25
+    },
+    {
+      "date": "2024-11-28",
+      "rate": 3.0
+    },
+    {
+      "date": "2025-02-25",
+      "rate": 2.75
+    },
+    {
+      "date": "2025-05-29",
+      "rate": 2.5
+    },
+    {
+      "date": "2026-07-16",
+      "rate": 2.75
+    },
+    {
+      "date": "2026-08-27",
+      "rate": 3.0
+    }
+  ],
+  "cpi_yoy": 3.1,
+  "core_cpi_yoy": 3.4,
+  "inflation_target": 2.0,
+  "gdp_growth": 3.3,
+  "potential_growth": 2.0,
+  "neutral_rate": 2.5,
+  "ktb_3y": 4.006,
+  "ktb_10y": 4.392,
+  "usdkrw": 1360.0,
+  "house_price_trend": "rising",
+  "household_debt_trend": "rising",
+  "policy_guidance": "hawkish",
+  "sources": [
+    "한국은행 통화정책방향 2026-08-27: 기준금리 2.75%→3.00%, 성장률 전망 2026 3.3%, 추가 인상 시기는 데이터에 따라 결정 (성장률·정책기조 수동 입력 근거)",
+    "기준금리·소비자물가·근원물가(식료품 및 에너지 제외)·국고채·원/달러: 한국은행 ECOS 자동 갱신"
+  ],
+  "cpi_yoy_month": "2026-08",
+  "core_cpi_yoy_month": "2026-08"
+}
